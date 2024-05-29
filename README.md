@@ -1,2 +1,2 @@
 # BearCart
-Behavioral Cloning Karting!
+Behavioral-Clone Karting!

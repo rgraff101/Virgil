@@ -10,7 +10,7 @@ from gpiozero import Servo
 from time import sleep
 
 
-servo = Servo(pin=17)  
+servo = Servo(pin=13)  
 
 # Observe CENTER and BOUNDARY while executing following loop
 for v in range(-5, 10): 

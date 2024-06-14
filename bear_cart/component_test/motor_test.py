@@ -12,7 +12,7 @@ for i in range(4):
     sleep(1)
 print("Here we go...")
 try:
-    motor = PhaseEnableMotor(phase=19, enable=26)
+    motor = PhaseEnableMotor(phase=19, enable=13)
     for i in range(100):
         motor.forward(i*0.01)
         print(f"Forward at {i*0.01}")

@@ -17,6 +17,7 @@ model_path = os.path.join(sys.path[0], 'models', 'DonkeyNet-15epochs-0.001lr.pth
 to_tensor = transforms.ToTensor()
 model = convnets.DonkeyNet()  
 model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+model.eval()
 # Load configs
 params_file_path = os.path.join(sys.path[0], 'configs.json')
 params_file = open(params_file_path)
@@ -67,55 +68,55 @@ frame_counts = 0
 ave_frame_rate = 0.
 
 
-# # MAIN
-# try:
-#     while True:
-#         frame = cam.capture_array()  # read image
-#         if frame is None:
-#             print("No frame received. TERMINATE!")
-#             sys.exit()
-#         for e in pygame.event.get():  # read controller input
-#             if e.type == pygame.JOYBUTTONDOWN:
-#                 if js.get_button(STOP_BUTTON):  # emergency stop 
-#                     throttle.stop()
-#                     throttle.close()
-#                     steer.close()
-#                     cv.destroyAllWindows()
-#                     pygame.quit()
-#                     print("E-STOP PRESSED. TERMINATE")
-#                     sys.exit()
-#         # predict steer and throttle
-#         # image = cv.resize(frame, (120, 160))
-#         img_tensor = to_tensor(frame)
-#         pred_st, pred_th = model(img_tensor[None, :]).squeeze()
-#         st_trim = float(pred_st)
-#         if st_trim >= 1:  # trim steering signal
-#             st_trim = .999
-#         elif st_trim <= -1:
-#             st_trim = -.999
-#         th_trim = (float(pred_th))
-#         if th_trim >= 1:  # trim throttle signal
-#             th_trim = .999
-#         elif th_trim <= -1:
-#             th_trim = -.999
-#         # Drive servo
-#         steer.angle = STEER_CENTER + st_trim * STEER_RANGE * STEER_DIR
-#         # Drive motor
-#         if th_trim >= 0.1:
-#             throttle.forward(min(th_trim, THROTTLE_LIMIT))
-#         elif th_trim <= -0.1:
-#             throttle.backward(min(-th_trim, THROTTLE_LIMIT))
-#         else:
-#             throttle.stop()
-#         print(f"predicted action: {pred_st, pred_th}")        
-#         frame_counts += 1
-#         # Log frame rate
-#         since_start = time() - start_stamp
-#         frame_rate = frame_counts / since_start
-#         print(f"frame rate: {frame_rate}")
-#         if cv.waitKey(1)==ord('q'):
-#             cv.destroyAllWindows()
-#             sys.exit()
-# except KeyboardInterrupt:
-#     cv.destroyAllWindows()
-#     sys.exit()
+# MAIN
+try:
+    while True:
+        frame = cam.capture_array()  # read image
+        if frame is None:
+            print("No frame received. TERMINATE!")
+            sys.exit()
+        for e in pygame.event.get():  # read controller input
+            if e.type == pygame.JOYBUTTONDOWN:
+                if js.get_button(STOP_BUTTON):  # emergency stop 
+                    throttle.stop()
+                    throttle.close()
+                    steer.close()
+                    cv.destroyAllWindows()
+                    pygame.quit()
+                    print("E-STOP PRESSED. TERMINATE")
+                    sys.exit()
+        # predict steer and throttle
+        # image = cv.resize(frame, (120, 160))
+        img_tensor = to_tensor(frame)
+        pred_st, pred_th = model(img_tensor[None, :]).squeeze()
+        st_trim = float(pred_st)
+        if st_trim >= 1:  # trim steering signal
+            st_trim = .999
+        elif st_trim <= -1:
+            st_trim = -.999
+        th_trim = (float(pred_th))
+        if th_trim >= 1:  # trim throttle signal
+            th_trim = .999
+        elif th_trim <= -1:
+            th_trim = -.999
+        # Drive servo
+        steer.angle = STEER_CENTER + st_trim * STEER_RANGE * STEER_DIR
+        # Drive motor
+        if th_trim >= 0.1:
+            throttle.forward(min(th_trim, THROTTLE_LIMIT))
+        elif th_trim <= -0.1:
+            throttle.backward(min(-th_trim, THROTTLE_LIMIT))
+        else:
+            throttle.stop()
+        print(f"predicted action: {pred_st, pred_th}")        
+        frame_counts += 1
+        # Log frame rate
+        since_start = time() - start_stamp
+        frame_rate = frame_counts / since_start
+        print(f"frame rate: {frame_rate}")
+        if cv.waitKey(1)==ord('q'):
+            cv.destroyAllWindows()
+            sys.exit()
+except KeyboardInterrupt:
+    cv.destroyAllWindows()
+    sys.exit()

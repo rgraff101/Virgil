@@ -10,5 +10,6 @@
     "throttle_pwm_pin": 13,
     "throttle_limit": 0.5,
     "throttle_joy_axis": 4,
+    "record_btn": 5,
     "stop_btn": 2
 }

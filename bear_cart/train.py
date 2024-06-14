@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-# from torch.optim.lr_scheduler import StepLR
 from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision.transforms import v2
 import matplotlib.pyplot as plt
@@ -12,9 +11,9 @@ import convnets
 import cv2 as cv
 
 # Pass in command line arguments for data diretory name
-# e.g. python train.py 2022_02_22_22_22
+# e.g. python train.py 2022-02-22-22-22
 if len(sys.argv) != 2:
-    print('Training script needs 1 parameters!!!')
+    print('Training script needs data!!!')
     sys.exit(1)  # exit with an error code
 else:
     data_datetime = sys.argv[1]
@@ -42,7 +41,7 @@ class BearCartDataset(Dataset):
         image_tensor = self.transform(image)
         steering = self.img_labels.iloc[idx, 1].astype(np.float32)
         throttle = self.img_labels.iloc[idx, 2].astype(np.float32)
-        return image_tensor(float), steering, throttle
+        return image_tensor.float(), steering, throttle
 
 
 def train(dataloader, model, loss_fn, optimizer):

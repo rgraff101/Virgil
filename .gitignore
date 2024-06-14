@@ -161,3 +161,7 @@ cython_debug/
 
 # Freecad backup
 *.FCBak
+
+# Data directory
+*data/
+*models/

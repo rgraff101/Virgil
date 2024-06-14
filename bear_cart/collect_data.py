@@ -41,7 +41,7 @@ pygame.display.init()
 pygame.joystick.init()
 js = pygame.joystick.Joystick(0)
 # Create data directory
-image_dir = os.path.join(sys.path[0], 'data', datetime.now().strftime("%Y_%m_%d_%H_%M"), 'images/')
+image_dir = os.path.join(sys.path[0], 'data', datetime.now().strftime("%Y-%m-%d-%H-%M"), 'images/')
 if not os.path.exists(image_dir):
     try:
         os.makedirs(image_dir)

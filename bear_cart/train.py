@@ -41,7 +41,7 @@ class BearCartDataset(Dataset):
         image_tensor = self.transform(image)
         steering = self.img_labels.iloc[idx, 1].astype(np.float32)
         throttle = self.img_labels.iloc[idx, 2].astype(np.float32)
-        return image_tensor(float), steering, throttle
+        return image_tensor.float(), steering, throttle
 
 
 def train(dataloader, model, loss_fn, optimizer):

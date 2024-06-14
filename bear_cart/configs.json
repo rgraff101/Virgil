@@ -4,7 +4,11 @@
     "steer_max_angle": 90,
     "steer_center_angle": 30,
     "steer_range": 60,
+    "steer_dir": 1,
+    "steer_joy_axis": 0,
     "throttle_dir_pin": 19,
     "throttle_pwm_pin": 13,
-    "throttle_limit": 0.5
+    "throttle_limit": 0.5,
+    "throttle_joy_axis": 4,
+    "stop_btn": 2
 }

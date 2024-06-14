@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import sys
 import cv2
 
 from picamera2 import Picamera2
@@ -16,4 +17,7 @@ while True:
     im = picam2.capture_array()
     grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     cv2.imshow("Camera", im)
-    cv2.waitKey(1)
+    # Press "q" to quit
+    if cv2.waitKey(1)==ord('q'):
+        cv2.destroyAllWindows()
+        sys.exit()

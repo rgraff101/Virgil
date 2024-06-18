@@ -1,5 +1,5 @@
 # BearCart
-Behavioral-Clone Karting!
+Make a self-driving car with Behavioral-Cloning.
 
 ## Platform
 Raspberry Pi + Raspberry Pi OS

@@ -13,7 +13,7 @@ assert is_lifted=="no"
 is_ready = input("Are you ready to start motor test? [yes/no]")
 assert is_ready=="yes"
 print("Motor will increase and decrease speed. Both directions will be tested. Please fasten your seat belt!")
-for i in range(4):
+for i in reversed(range(1, 4)):
     print(i)
     sleep(1)
 print("Here we go...")

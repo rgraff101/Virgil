@@ -15,7 +15,10 @@ print("Here we go...")
 
 # LOOP
 try:
-    motor = PhaseEnableMotor(phase=19, enable=13)
+    motor = PhaseEnableMotor(
+        phase=params['throttle_dir_pin'], 
+        enable=params['throttle_pwm_pin'],
+    )
     for i in range(100):
         motor.forward(i*0.01)
         print(f"Forward at {i*0.01}")

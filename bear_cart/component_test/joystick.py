@@ -1,15 +1,18 @@
-# import pygame
 from pygame.locals import *
 from pygame import event, display, joystick
+from time import sleep
 
-
+# SETUP
+print("Please take down the stop button, recording button, steer axis, throttle axis")
+sleep(1)
 def get_numControllers():
     return joystick.get_count()
-
 display.init()
 joystick.init()
 print(f"{get_numControllers()} joystick connected")
 js = joystick.Joystick(0)
+
+# LOOP
 while True:
     for e in event.get():
         if e.type == JOYAXISMOTION:

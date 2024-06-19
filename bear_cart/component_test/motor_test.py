@@ -2,6 +2,11 @@ from gpiozero import PhaseEnableMotor
 from time import sleep
 import json
 
+# Load configs
+params_file_path = os.path.join(os.path.dirname(sys.path[0]), 'configs.json')
+params_file = open(params_file_path)
+params = json.load(params_file)
+
 # SETUP
 is_lifted = input("Is any tire having contact with the ground or other objects? [yes/no]")
 assert is_lifted=="no"

@@ -7,7 +7,7 @@ import os
 import cv2 as cv
 from picamera2 import Picamera2
 import pygame
-from gpiozero import AngularServo, PhaseEnableMotor
+from gpiozero import LED, AngularServo, PhaseEnableMotor
 import json
 from time import time
 
@@ -20,11 +20,14 @@ params = json.load(params_file)
 # Constants
 STEER_AXIS = params['steer_joy_axis']
 THROTTLE_AXIS = params['throttle_joy_axis']
+RECORD_BUTTON = params['record_btn']
 STOP_BUTTON = params['stop_btn']
 STEER_CENTER = params['steer_center_angle']
 STEER_RANGE = params['steer_range']
 STEER_DIR = params['steer_dir'] 
 THROTTLE_LIMIT = params['throttle_limit']
+# Init LED
+head_light = LED(params['led_pin'])
 # Init servo 
 steer = AngularServo(
     pin=params['steer_pin'], 
@@ -60,7 +63,6 @@ for i in reversed(range(60)):
         sys.exit()
     if not i % 20:
         print(i/20)  # count down 3, 2, 1 sec
-
 # Init timer for FPS computing
 start_stamp = time()
 frame_counts = 0
@@ -89,6 +91,8 @@ try:
                     pygame.quit()
                     print("E-STOP PRESSED. TERMINATE")
                     sys.exit()
+                elif js.get_button(RECORD_BUTTON):
+                    head_light.toggle() 
         # Calaculate steering and throttle value
         act_st = st_ax_val  # steer action: -1: left, 1: right
         act_th = -th_ax_val  # throttle action: -1: max forward, 1: max backward

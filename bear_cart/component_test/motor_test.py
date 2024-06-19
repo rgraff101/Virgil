@@ -1,7 +1,8 @@
 from gpiozero import PhaseEnableMotor
 from time import sleep
+import json
 
-
+# SETUP
 is_lifted = input("Is any tire having contact with the ground or other objects? [yes/no]")
 assert is_lifted=="no"
 is_ready = input("Are you ready to start motor test? [yes/no]")
@@ -11,6 +12,8 @@ for i in range(4):
     print(i)
     sleep(1)
 print("Here we go...")
+
+# LOOP
 try:
     motor = PhaseEnableMotor(phase=19, enable=13)
     for i in range(100):

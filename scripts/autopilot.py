@@ -13,7 +13,11 @@ import convnets
 
 # SETUP
 # Load configs and init servo controller
-model_path = os.path.join(sys.path[0], 'models', 'DonkeyNet-15epochs-0.001lr.pth')
+model_path = os.path.join(
+    os.path.dirname(sys.path[0]), 
+    'models', 
+    'DonkeyNet-15epochs-0.001lr.pth'
+)
 to_tensor = transforms.ToTensor()
 model = convnets.DonkeyNet()  
 model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))

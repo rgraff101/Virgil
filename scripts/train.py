@@ -77,7 +77,7 @@ def test(dataloader, model, loss_fn):
 
 # MAIN
 # Create a dataset
-data_dir = os.path.join(sys.path[0], 'data', data_datetime)
+data_dir = os.path.join(os.path.dirname(sys.path[0]), 'data', data_datetime)
 annotations_file = os.path.join(data_dir, 'labels.csv')  # the name of the csv file
 img_dir = os.path.join(data_dir, 'images') # the name of the folder with all the images in it
 bearcart_dataset = BearCartDataset(annotations_file, img_dir)

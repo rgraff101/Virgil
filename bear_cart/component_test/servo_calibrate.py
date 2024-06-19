@@ -10,6 +10,7 @@ import sys
 import os
 from gpiozero import AngularServo
 from time import sleep
+import json
 
 # Load configs
 params_file_path = os.path.join(os.path.dirname(sys.path[0]), 'configs.json')

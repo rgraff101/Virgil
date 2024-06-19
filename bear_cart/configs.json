@@ -8,7 +8,7 @@
     "steer_joy_axis": 0,
     "throttle_dir_pin": 19,
     "throttle_pwm_pin": 13,
-    "throttle_limit": 0.6,
+    "throttle_limit": 0.5,
     "throttle_joy_axis": 4,
     "record_btn": 5,
     "stop_btn": 2

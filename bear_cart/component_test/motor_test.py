@@ -1,3 +1,5 @@
+import sys
+import os
 from gpiozero import PhaseEnableMotor
 from time import sleep
 import json

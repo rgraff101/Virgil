@@ -4,7 +4,7 @@ from datetime import datetime
 import cv2 as cv
 from picamera2 import Picamera2
 import pygame
-from gpiozero import AngularServo, PhaseEnableMotor
+from gpiozero import LED, AngularServo, PhaseEnableMotor
 import json
 from time import time
 import csv
@@ -24,6 +24,8 @@ STEER_CENTER = params['steer_center_angle']
 STEER_RANGE = params['steer_range']
 STEER_DIR = params['steer_dir']
 THROTTLE_LIMIT = params['throttle_limit']
+# Init LED
+head_light = LED(params['led_pin'])
 # Init servo 
 steer = AngularServo(
     pin=params['steer_pin'], 
@@ -88,6 +90,8 @@ try:
                 th_ax_val = round((js.get_axis(THROTTLE_AXIS)), 2)  # keep 2 decimals
             elif e.type == pygame.JOYBUTTONDOWN:
                 if js.get_button(STOP_BUTTON):  # emergency stop 
+                    head_light.off()
+                    head_light.close()
                     throttle.stop()
                     throttle.close()
                     steer.close()
@@ -98,6 +102,7 @@ try:
                 elif js.get_button(RECORD_BUTTON):
                     is_recording = not is_recording
                     print(f"Recording: {is_recording}")
+                    head_light.toggle() 
         # Calaculate steering and throttle value
         act_st = st_ax_val  # steer action: -1: left, 1: right
         act_th = -th_ax_val  # throttle action: -1: max forward, 1: max backward
@@ -112,7 +117,7 @@ try:
             throttle.stop()
         # Log data
         action = [act_st, act_th]
-        print(f"action: {action}")
+        # print(f"action: {action}")
         if is_recording:
             # img = cv.resize(frame, (120, 160))
             cv.imwrite(image_dir + str(frame_counts) + '.jpg', frame)
@@ -124,9 +129,11 @@ try:
         # Log frame rate
         since_start = time() - start_stamp
         frame_rate = frame_counts / since_start
-        print(f"frame rate: {frame_rate}")
+        # print(f"frame rate: {frame_rate}")
         # Press "q" to quit
         if cv.waitKey(1)==ord('q'):
+            head_light.off()
+            head_light.close()
             throttle.stop()
             throttle.close()
             steer.close()
@@ -136,6 +143,8 @@ try:
             
 # Take care terminate signal (Ctrl-c)
 except KeyboardInterrupt:
+    head_light.off()
+    head_light.close()
     throttle.stop()
     throttle.close()
     steer.close()

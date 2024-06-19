@@ -5,7 +5,9 @@ from time import sleep
 
 # SETUP
 print("Please adjust lens focus if blurry")
-sleep(3)
+for i in reversed(range(1, 4)):
+    print(i)
+    sleep(1)
 cv2.startWindowThread()
 picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(main={"format": 'RGB888', "size": (640, 480)}))

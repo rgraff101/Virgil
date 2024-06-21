@@ -18,5 +18,8 @@ cd BearCart
 pip install -r requirements.txt --break-system-packages
 ```
 
+## Bill of Materials
+Please use our [shopping list](/_DOCS/BOM.md) for a reference
+
 ## Demo video
 [BearCart stumbles](https://youtube.com/shorts/Kcm6qQqev3s)

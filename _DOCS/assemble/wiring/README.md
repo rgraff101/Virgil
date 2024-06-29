@@ -1,4 +1,7 @@
 # Electronic Components Wiring Guide
 
 ## 1 Split Battery Power
-![switch_wire](/_DOCS/assemble/wiring/images/wiring-switch.png)
+![battery-switch-splitter](/_DOCS/assemble/wiring/images/battery-switch-splitter.png)
+
+## 2 Powering Up Raspberry Pi
+![splitter-buck-rpi](/_DOCS/assemble/wiring/images/splitter-adj_buck-rpi5.png)

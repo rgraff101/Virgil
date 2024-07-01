@@ -8,3 +8,7 @@
 
 ## 3 Powering Up Steering Servo
 ![splitter-buck-servo](/_DOCS/assemble/electric/images/splitter-buck-servo.jpg)
+
+## 4 Powering Up Motor Driver
+![splitter-md-motor](/_DOCS/assemble/electric/images/splitter-md-motor.jpg)
+

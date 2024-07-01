@@ -5,3 +5,6 @@
 
 ## 2 Powering Up Raspberry Pi
 ![splitter-buck-rpi](/_DOCS/assemble/electric/images/splitter-buck-rpi5.jpg)
+
+## 3 Powering Up Steering Servo
+![splitter-buck-servo](/_DOCS/assemble/electric/images/splitter-buck-servo.jpg)

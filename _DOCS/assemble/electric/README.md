@@ -1,4 +1,6 @@
 # Electronic Components Wiring Guide
+Please refer to the following diagram for wiring the electric components.
+![wiring-all](/_DOCS/assemble/electric/images/wiring-all.jpg)
 
 ## 1 Split Battery Power
 ![battery-switch-splitter](/_DOCS/assemble/electric/images/battery-switch-splitter.jpg)

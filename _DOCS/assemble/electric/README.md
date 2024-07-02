@@ -12,3 +12,6 @@
 ## 4 Powering Up Motor Driver
 ![splitter-md-motor](/_DOCS/assemble/electric/images/splitter-md-motor.jpg)
 
+## 5 GPIO Wiring
+![gpio](/_DOCS/assemble/electric/images/gpio.jpg)
+

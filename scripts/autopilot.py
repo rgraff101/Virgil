@@ -3,7 +3,7 @@ import os
 import cv2 as cv
 from picamera2 import Picamera2
 import pygame
-from gpiozero import AngularServo, PhaseEnableMotor
+from gpiozero import LED, AngularServo, PhaseEnableMotor
 import json
 from time import time
 import torch
@@ -27,11 +27,14 @@ params_file_path = os.path.join(sys.path[0], 'configs.json')
 params_file = open(params_file_path)
 params = json.load(params_file)
 # Constants
+PAUSE_BUTTON = params['record_btn']
 STOP_BUTTON = params['stop_btn']
 STEER_CENTER = params['steer_center_angle']
 STEER_RANGE = params['steer_range']
 STEER_DIR = params['steer_dir']
 THROTTLE_LIMIT = params['throttle_limit']
+# Init LED
+head_light = LED(params['led_pin'])
 # Init servo 
 steer = AngularServo(
     pin=params['steer_pin'], 
@@ -70,6 +73,7 @@ for i in reversed(range(60)):
 start_stamp = time()
 frame_counts = 0
 ave_frame_rate = 0.
+is_paused = True
 
 
 # MAIN
@@ -89,6 +93,10 @@ try:
                     pygame.quit()
                     print("E-STOP PRESSED. TERMINATE")
                     sys.exit()
+                elif js.get_button(PAUSE_BUTTON):
+                    is_paused = not is_paused
+                    print(f"Paused: {is_paused}")
+                    head_light.toggle() 
         # predict steer and throttle
         # image = cv.resize(frame, (120, 160))
         img_tensor = to_tensor(frame)
@@ -106,12 +114,15 @@ try:
         # Drive servo
         steer.angle = STEER_CENTER + st_trim * STEER_RANGE * STEER_DIR
         # Drive motor
-        if th_trim >= 0.1:
-            throttle.forward(min(th_trim, THROTTLE_LIMIT))
-        elif th_trim <= -0.1:
-            throttle.backward(min(-th_trim, THROTTLE_LIMIT))
-        else:
+        if is_paused:
             throttle.stop()
+        else:
+            if th_trim >= 0.1:
+                throttle.forward(min(th_trim, THROTTLE_LIMIT))
+            elif th_trim <= -0.1:
+                throttle.backward(min(-th_trim, THROTTLE_LIMIT))
+            else:
+                throttle.stop()
         print(f"predicted action: {pred_st, pred_th}")        
         frame_counts += 1
         # Log frame rate

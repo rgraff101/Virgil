@@ -37,4 +37,5 @@ pip install -r requirements.txt --break-system-packages
 Please use our [shopping list](/_DOCS/BOM.md) for a reference
 
 ## Demo video
-- [BearCart stumbles](https://youtube.com/shorts/Kcm6qQqev3s)
+- [Initial BearCart](https://youtube.com/shorts/Kcm6qQqev3s)
+- [Another Autopilot](https://youtu.be/8GX6HnfgrJQ)

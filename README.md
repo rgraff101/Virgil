@@ -7,19 +7,22 @@ Raspberry Pi 5 SBC in its native operating system: Raspberry Pi OS.
 This project is strongly inspired by the 
 [DonkeyCar](https://github.com/autorope/donkeycar) project.
 
-## Dependencies 
+
+## Software Installation
+Fire up the terminal on your Raspberry Pi, and run following commands in it.
+
+### Install Dependencies 
 ```bash
 sudo apt install python3-pip
 pip install pip --upgrade --break-system-packages
 ```
 
-## Software Installation
-Fire up the terminal on your Raspberry Pi, and run following commands in it.
 ### Clone The Repository
 ```bash
 cd ~
 git clone https://github.com/UCAEngineeringPhysics/BearCart.git
 ```
+
 ### Install Python Packages
 ```bash
 cd ~/BearCart

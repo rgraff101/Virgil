@@ -1,8 +1,11 @@
 # BearCart
-Make a self-driving car with Behavioral-Cloning.
+BearCart an autonomous driving project. The goal is to upgrade an off-the-shelf
+RC car into an AI powered self-driving platform. The software is running on a
+Raspberry Pi 5 SBC in its native operating system: Raspberry Pi OS.
+![portrait](/_DOCS/assemble/mechanical/images/bc_portrait.jpg)
 
-## Platform
-Raspberry Pi + Raspberry Pi OS
+This project is strongly inspired by the 
+[DonkeyCar](https://github.com/autorope/donkeycar) project.
 
 ## Dependencies 
 ```bash
@@ -10,16 +13,25 @@ sudo apt install python3-pip
 pip install pip --upgrade --break-system-packages
 ```
 
-## Installation
+## Software Installation
+Fire up the terminal on your Raspberry Pi, and run following commands in it.
+### Clone The Repository
 ```bash
 cd ~
 git clone https://github.com/UCAEngineeringPhysics/BearCart.git
-cd BearCart
+```
+### Install Python Packages
+```bash
+cd ~/BearCart
 pip install -r requirements.txt --break-system-packages
 ```
+
+## Assembly Guides
+- Components [layout](/_DOCS/assemble/mechanical/README.md)
+- Wiring [diagrams](/_DOCS/assemble/electric/README.md) 
 
 ## Bill of Materials
 Please use our [shopping list](/_DOCS/BOM.md) for a reference
 
 ## Demo video
-[BearCart stumbles](https://youtube.com/shorts/Kcm6qQqev3s)
+- [BearCart stumbles](https://youtube.com/shorts/Kcm6qQqev3s)

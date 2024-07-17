@@ -1,56 +1,27 @@
-import sys
-import os
-from gpiozero import PhaseEnableMotor
+import serial
 from time import sleep
-import json
 
-# Load configs
-params_file_path = os.path.join(os.path.dirname(sys.path[0]), 'configs.json')
-params_file = open(params_file_path)
-params = json.load(params_file)
 
 # SETUP
-is_lifted = input("Is any tire having contact with the ground or other objects? [yes/no]")
-assert is_lifted=="no"
-is_ready = input("Are you ready to start motor test? [yes/no]")
-assert is_ready=="yes"
-print("Motor will increase and decrease speed. Both directions will be tested. Please fasten your seat belt!")
-for i in reversed(range(1, 4)):
-    print(i)
-    sleep(1)
-print("Here we go...")
+ser = serial.Serial('/dev/ttyACM0', 115200)
 
 # LOOP
 try:
-    motor = PhaseEnableMotor(
-        phase=params['throttle_dir_pin'], 
-        enable=params['throttle_pwm_pin'],
-    )
-    for i in range(100):
-        motor.forward(i*0.01)
-        print(f"Forward at {i*0.01}")
+    for i in range(1250000, 1800000, 10000): # forward up
+        ser.write(bytes(f"1500000, {i}\n".encode('utf-8')))
         sleep(0.2)
-    for i in reversed(range(100)):
-        motor.forward(i*0.01)
-        print(f"Forward at {i*0.01}")
+    for i in reversed(range(1250000, 1800000, 10000)): # forward down
+        ser.write(bytes(f"1500000, {i}\n".encode('utf-8')))
         sleep(0.2)
-    print("Stop")
-    motor.stop()
-    sleep(1)
-    for i in range(100):
-        motor.backward(i*0.01)
-        print(f"Backward at {i*0.01}")
+    for i in reversed(range(1000000, 1250000, 10000)): # reverse up
+        ser.write(bytes(f"1500000, {i}\n".encode('utf-8')))
         sleep(0.2)
-    for i in reversed(range(100)):
-        motor.backward(i*0.01)
-        print(f"Backward at {i*0.01}")
+    for i in range(1000000, 1250000, 10000): # reverse down
+        ser.write(bytes(f"1500000, {i}\n".encode('utf-8')))
         sleep(0.2)
+    ser.write(bytes("1500000, 1250000\n".encode('utf-8')))
+    ser.close()
 except KeyboardInterrupt:
-    motor.stop()
-    motor.close()
-    print("Test interrupted!")
-
-motor.stop()
-motor.close()
-print("Test completed!")
-
+    ser.write(bytes("1500000, 1250000\n".encode('utf-8')))
+    ser.close()
+    print("Stopping.")

@@ -1,9 +1,13 @@
+"""
+Hard reset pico to recalibrate throttle range
+"""
+
 from machine import Pin, PWM
 
-class Engine:
+class Throttle:
     def __init__(
         self,
-        pwm_pin_id: int,
+        pwm_pin_id: int, # GPIO id on pico
         pw_stall: int = int(1.21e6), # motor stop pulse width, ns
         pw_fwd_max: int = int(1.8e6), # maximum forward pulse width, ns
         pw_rev_max: int = int(1.09e6), # maximum reverse pulse width, ns
@@ -29,7 +33,7 @@ class Engine:
 # Test
 if __name__ == '__main__':
     from time import sleep
-    m = Engine(15)
+    m = Throttle(15)
     sleep(3)  # ESC calibrate
     for sp in range(100):
         m.forward(sp / 100)

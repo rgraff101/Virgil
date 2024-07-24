@@ -4,10 +4,10 @@ Upload this script to the pico board, then rename it to main.py.
 import sys
 import select
 from machine import Pin, PWM
-from esc_motor_driver import MotorDriver
+from engine import Engine
 
 # SETUP
-motor = MotorDriver(15)
+motor = Engine(15)
 servo = PWM(Pin(16))
 servo.freq(50)
 poller = select.poll()

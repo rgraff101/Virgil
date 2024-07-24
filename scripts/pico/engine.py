@@ -1,6 +1,9 @@
+"""
+Run esc_motor_test.py before using Engine()
+"""
 from machine import Pin, PWM
 
-class MotorDriver:
+class Engine:
     def __init__(
         self,
         pwm_pin_id: int,
@@ -16,13 +19,10 @@ class MotorDriver:
         self._pw_rev_max = pw_rev_max
         self._pw_fwd_max = pw_fwd_max
         
-    def forward(self, speed=0.):
-        """
-        Adjust speed in range 0~1
-        """
-        self.PWM_PIN.duty_ns(int((self._pw_fwd_max - self._pw_stall) * speed) + self._pw_stall)
+    def forward(self, speed: float = 0.):
+        self.PWM_PIN.duty_ns(self._pw_stall + int((self._pw_fwd_max - self._pw_stall) * speed))
 
-    def backward(self, speed=0.):
+    def backward(self, speed: float = 0.):
         self.PWM_PIN.duty_ns(self._pw_stall - int((self._pw_stall - self._pw_rev_max) * speed))
 
     def stop(self):
@@ -31,11 +31,22 @@ class MotorDriver:
 # Test
 if __name__ == '__main__':
     from time import sleep
-    m = MotorDriver(15)
+    m = Engine(15)
     for sp in range(100):
         m.forward(sp / 100)
+        print(f"FORWARD: {sp}%")
         sleep(0.05)
     for sp in reversed(range(100)):
         m.forward(sp / 100)
+        print(f"FORWARD: {sp}%")
         sleep(0.05)
+    for sp in range(100):
+        m.backward(sp / 100)
+        print(f"BACKWARD: {sp}%")
+        sleep(0.05)
+    for sp in reversed(range(100)):
+        m.backward(sp / 100)
+        print(f"BACKWARD: {sp}%")
+        sleep(0.05)
+    print("STOP")
     m.stop()

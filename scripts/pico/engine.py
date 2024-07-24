@@ -1,6 +1,3 @@
-"""
-Run esc_motor_test.py before using Engine()
-"""
 from machine import Pin, PWM
 
 class Engine:
@@ -14,6 +11,7 @@ class Engine:
         # Config pin
         self.PWM_PIN = PWM(Pin(pwm_pin_id))
         self.PWM_PIN.freq(50)
+        self.PWM_PIN.duty_ns(pw_stall)
         # Properties
         self._pw_stall = pw_stall
         self._pw_rev_max = pw_rev_max

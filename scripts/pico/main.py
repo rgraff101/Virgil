@@ -24,7 +24,7 @@ while True:
             th.forward(duty)
             print(f"FORWARD {duty}")
         elif duty < 0:
-            th.backward(duty)
+            th.backward(-duty)
             print(f"BACKWARD {duty}")
         else:
             th.stop()

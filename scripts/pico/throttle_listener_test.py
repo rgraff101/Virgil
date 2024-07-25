@@ -6,8 +6,10 @@ import sys
 import select
 from throttle import Throttle
 from time import sleep
+import machine
 
 # SETUP
+machine.freq(240000000)
 th = Throttle(15)
 sleep(3)  # ESC calibrate
 poller = select.poll()
@@ -19,13 +21,13 @@ while True:
     # read data from serial
     for msg, _ in event:
         buffer = msg.readline().rstrip()
-        throttle_duty = float(buffer)
-        if throttle_duty > 0:
-            th.forward(throttle_duty)
-            print("FORWARD")
-        elif throttle_duty < 0:
-            th.backward(throttle_duty)
-            print("BACKWARD")
+        duty = float(buffer)
+        if duty > 0:
+            th.forward(duty)
+            print(f"FORWARD {duty}")
+        elif duty < 0:
+            th.backward(-duty)
+            print(f"BACKWARD {duty}")
         else:
             th.stop()
             print("STOP")

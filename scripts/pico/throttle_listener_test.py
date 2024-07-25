@@ -6,10 +6,8 @@ import sys
 import select
 from throttle import Throttle
 from time import sleep
-import machine
 
 # SETUP
-machine.freq(240000000)
 th = Throttle(15)
 sleep(3)  # ESC calibrate
 poller = select.poll()

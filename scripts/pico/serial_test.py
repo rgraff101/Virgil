@@ -1,3 +1,6 @@
+"""
+Upload this script to the pico board, then rename it to main.py.
+"""
 import sys
 import select
 
@@ -11,6 +14,7 @@ while True:
     # read data from serial
     for msg, _ in event:
         buffer = msg.readline().rstrip()
-        if len(buffer) == 17: # Hello from RPi: 0
-            print(f"Pico hears: {buffer}")
+        print(buffer)
+        # if len(buffer) == 17: # Hello from RPi: 0
+        #     print(f"Pico hears: {buffer}")
             # sys.stdout.write(buffer)

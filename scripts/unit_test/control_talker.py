@@ -1,9 +1,13 @@
+"""
+Transmit control signal (a float number range from -1 to 1) to Pico
+Pico will decode this signal to PWM dutycycle to regulate ESC or servo
+"""
 import serial
 from time import sleep
 
 # SETUP
 ser = serial.Serial(port='/dev/ttyACM0', baudrate=115200)
-print(ser.name)
+print(f"Pico is connected to port: {ser.name}")
 
 # LOOP
 for i in range(100):

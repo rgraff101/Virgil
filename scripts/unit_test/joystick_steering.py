@@ -1,0 +1,56 @@
+"""
+Integrated test with controller, pico usb communication, throttle motor.
+"""
+import sys
+import os
+import serial
+import pygame
+import json
+from time import sleep
+
+
+# SETUP
+# Load configs
+params_file_path = os.path.join(os.path.dirname(sys.path[0]), 'configs.json')
+params_file = open(params_file_path)
+params = json.load(params_file)
+# Constants
+STEERING_AXIS = params['steering_joy_axis']
+STOP_BUTTON = params['stop_btn']
+# Init serial port 
+ser_pico = serial.Serial(port='/dev/ttyACM0', baudrate=115200)
+print(f"Connection to port {ser_pico.name} established.")
+# Init controller
+pygame.display.init()
+pygame.joystick.init()
+js = pygame.joystick.Joystick(0)
+# Init joystick axes values
+st_ax_val = 0.
+
+# MAIN LOOP
+try:
+    while True:
+        for e in pygame.event.get():  # read controller input
+            if e.type == pygame.JOYAXISMOTION:
+                st_ax_val = round((js.get_axis(STEERING_AXIS)), 2)  # keep 2 decimals
+            elif e.type == pygame.JOYBUTTONDOWN:
+                if js.get_button(STOP_BUTTON):  # emergency stop 
+                    print("E-STOP PRESSED. TERMINATE")
+                    pygame.quit()
+                    ser_pico.close()
+                    sys.exit()
+        # Calaculate steering and throttle value
+        act_st = st_ax_val
+        # Drive motor
+        msg = f"{act_st}\n".encode('utf-8')
+        ser_pico.write(msg)
+        # Log action
+        print(f"steering value: {act_st}")
+        # 20Hz
+        sleep(0.05)
+
+# Take care terminal signal (Ctrl-c)
+except KeyboardInterrupt:
+    pygame.quit()
+    ser_pico.close()
+    sys.exit()

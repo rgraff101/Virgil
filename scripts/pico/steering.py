@@ -23,11 +23,11 @@ class Steering:
         """
         d_ns = self._pw_ang_min + int(self._pw_range * (value + 1))
         self.PWM_PIN.duty_ns(d_ns)
-        print(f"pulse width: {d_ns}")
+        # print(f"pulse width: {d_ns}")
 
     def center(self):
         self.PWM_PIN.duty_ns(self._pw_center)
-        print("CENTERING")
+        # print("CENTERING")
         
 # Test
 if __name__ == '__main__':

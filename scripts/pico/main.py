@@ -9,7 +9,7 @@ from throttle import Throttle
 from time import sleep
 
 # SETUP
-st = Steering(16)
+st = Steering(0)
 th = Throttle(15)
 sleep(3)  # ESC calibrate
 poller = select.poll()
@@ -35,4 +35,4 @@ while True:
                 # print(f"BACKWARD {act_th}")
             else:
                 th.stop()
-                print("STOP")               
+                # print("STOP")               

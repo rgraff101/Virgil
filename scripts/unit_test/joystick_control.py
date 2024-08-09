@@ -18,8 +18,7 @@ params = json.load(params_file)
 STEERING_AXIS = params['steering_joy_axis']
 THROTTLE_AXIS = params['throttle_joy_axis']
 STOP_BUTTON = params['stop_btn']
-# THROTTLE_LIMIT = params['throttle_limit']
-THROTTLE_LIMIT = 99
+TROTTLE_LIMIT = params['throttle_limit']
 # Init serial port
 ser_pico = serial.Serial(port='/dev/ttyACM0', baudrate=115200)
 print(f"Connection to port {ser_pico.name} established.")
@@ -45,6 +44,7 @@ try:
                     ser_pico.close()
                     sys.exit()
         # Calaculate steering and throttle value
+        # TODO: set throttle limit
         act_st = st_ax_val
         act_th = -th_ax_val  # throttle action: -1: max forward, 1: max backward
         # Drive motor

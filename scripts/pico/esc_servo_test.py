@@ -15,4 +15,5 @@ for i in reversed(range(1000000, 2000000, 10000)):
     print(i)
     sleep(0.2)
 servo.duty_ns(1500000)
+servo.deinit()
 

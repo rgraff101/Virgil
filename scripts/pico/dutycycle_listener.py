@@ -26,6 +26,6 @@ while True:
         # print(len(buffer)) # debug
         if len(buffer) == 2:
             ns_st, ns_th = int(buffer[0]), int(buffer[1])
-            # print(act_st, act_th) # debug
+            print(ns_st, ns_th) # debug
             steering.duty_ns(ns_st)
             throttle.duty_ns(ns_th)

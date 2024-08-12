@@ -26,7 +26,7 @@ STOP_BUTTON = params['stop_btn']
 TROTTLE_LIMIT = params['throttle_limit']
 # Init serial port
 ser_pico = serial.Serial(port='/dev/ttyACM0', baudrate=115200)
-print(f"Pico is connected to port: {ser.name}")
+print(f"Pico is connected to port: {ser_pico.name}")
 # Init controller
 pygame.display.init()
 pygame.joystick.init()

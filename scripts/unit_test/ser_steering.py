@@ -16,14 +16,16 @@ params = json.load(params_file)
 STEERING_CENTER = params['steering_center']
 STEERING_RANGE = params['steering_range']
 THROTTLE_STALL = params['throttle_stall']
-THROTTLE_LIMIT = params['throttle_limit']
 # Init serial port
 ser = serial.Serial(port='/dev/ttyACM0', baudrate=115200)
 print(f"Pico is connected to port: {ser.name}")
-
-# LOOP
+# Init drivetrain
 duty_st = STEERING_CENTER
 duty_th = THROTTLE_STALL
+
+
+# LOOP
+# Steering: mid->right->mid->left->mid
 for i in range(100):
     duty_st = STEERING_CENTER - STEERING_RANGE + int(STEERING_RANGE * (i/100 + 1))
     msg = (str(duty_st) + "," + str(duty_th) + "\n").encode('utf-8')

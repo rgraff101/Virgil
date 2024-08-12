@@ -1,16 +1,16 @@
 {
     "led_pin": 21,
+    "steering_joy_axis": 0,
     "steering_left": 1000000,
     "steering_right": 2000000,
     "steering_center": 1500000,
     "steering_range": 500000,
     "steering_dir": 1,
+    "throttle_joy_axis": 4,
     "throttle_limit": 0.4,
     "throttle_stall": 1210000,
-    "throttle_forward_max": 1800000,
-    "throttle_backward_max": 1090000,
-    "steering_joy_axis": 0,
-    "throttle_joy_axis": 4,
+    "throttle_fwd_max": 1800000,
+    "throttle_rev_max": 1090000,
     "record_btn": 5,
     "stop_btn": 0
 }

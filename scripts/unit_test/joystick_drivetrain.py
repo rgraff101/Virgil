@@ -65,7 +65,7 @@ try:
         # f"{act_st,act_th}\n".encode('utf-8')
         ser_pico.write(msg)
         # Log action
-        print(f"action: {msg}")
+        print(f"action: {act_st, act_th}")
         # 20Hz
         sleep(0.05)
 

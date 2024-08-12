@@ -24,6 +24,5 @@ while True:
         buffer = msg.readline().rstrip().split(',')
         if len(buffer) == 2:
             ns_st, ns_th = int(buffer[0]), int(buffer[1])
-            print(ns_st, ns_th) # debug
             steering.duty_ns(ns_st)
             throttle.duty_ns(ns_th)

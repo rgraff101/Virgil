@@ -78,7 +78,7 @@ ax_val_st = 0. # center steering
 ax_val_th = 0. # shut throttle
 is_recording = False
 
-# MAIN LOOP
+# LOOP
 try:
     while True:
         frame = cam.capture_array() # read image

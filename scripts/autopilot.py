@@ -1,25 +1,26 @@
 import sys
 import os
-import cv2 as cv
-from picamera2 import Picamera2
-import pygame
-from gpiozero import LED, AngularServo, PhaseEnableMotor
 import json
 from time import time
 import torch
 from torchvision import transforms
 import convnets
+import serial
+import pygame
+import cv2 as cv
+from picamera2 import Picamera2
+from gpiozero import LED
 
 
 # SETUP
 # Load configs and init servo controller
 model_path = os.path.join(
-    os.path.dirname(sys.path[0]), 
+    os.path.dirname(sys.path[0]),
     'models', 
     'DonkeyNet-15epochs-0.001lr.pth'
 )
 to_tensor = transforms.ToTensor()
-model = convnets.DonkeyNet()  
+model = convnets.DonkeyNet()
 model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
 model.eval()
 # Load configs
@@ -27,31 +28,26 @@ params_file_path = os.path.join(sys.path[0], 'configs.json')
 params_file = open(params_file_path)
 params = json.load(params_file)
 # Constants
+STEERING_CENTER = params['steering_center']
+STEERING_RANGE = params['steering_range']
+THROTTLE_STALL = params['throttle_stall']
+THROTTLE_FWD_RANGE = params['throttle_fwd_range']
+THROTTLE_REV_RANGE = params['throttle_rev_range']
+THROTTLE_LIMIT = params['throttle_limit']
 PAUSE_BUTTON = params['record_btn']
 STOP_BUTTON = params['stop_btn']
-STEER_CENTER = params['steer_center_angle']
-STEER_RANGE = params['steer_range']
-STEER_DIR = params['steer_dir']
-THROTTLE_LIMIT = params['throttle_limit']
 # Init LED
-head_light = LED(params['led_pin'])
-# Init servo 
-steer = AngularServo(
-    pin=params['steer_pin'], 
-    initial_angle=params['steer_center_angle'], 
-    min_angle=params['steer_min_angle'], 
-    max_angle=params['steer_max_angle'],
-)
-# Init motor 
-throttle = PhaseEnableMotor(
-    phase=params['throttle_dir_pin'], 
-    enable=params['throttle_pwm_pin'],
-)
+headlight = LED(params['led_pin'])
+headlight.off()
+# Init serial port
+ser_pico = serial.Serial(port='/dev/ttyACM0', baudrate=115200)
+print(f"Pico is connected to port: {ser_pico.name}")
 # Init controller
 pygame.display.init()
 pygame.joystick.init()
 js = pygame.joystick.Joystick(0)
 # init camera
+cv.startWindowThread()
 cam = Picamera2()
 cam.configure(
     cam.create_preview_configuration(
@@ -73,32 +69,35 @@ for i in reversed(range(60)):
 start_stamp = time()
 frame_counts = 0
 ave_frame_rate = 0.
+# Init variables
 is_paused = True
 
 
-# MAIN
+# LOOP
 try:
     while True:
         frame = cam.capture_array()  # read image
         if frame is None:
             print("No frame received. TERMINATE!")
+            headlight.close()
+            cv.destroyAllWindows()
+            pygame.quit()
+            ser_pico.close()
             sys.exit()
         for e in pygame.event.get():  # read controller input
             if e.type == pygame.JOYBUTTONDOWN:
-                if js.get_button(STOP_BUTTON):  # emergency stop 
-                    throttle.stop()
-                    throttle.close()
-                    steer.close()
-                    cv.destroyAllWindows()
-                    pygame.quit()
-                    print("E-STOP PRESSED. TERMINATE")
-                    sys.exit()
-                elif js.get_button(PAUSE_BUTTON):
+                if js.get_button(PAUSE_BUTTON):
                     is_paused = not is_paused
                     print(f"Paused: {is_paused}")
-                    head_light.toggle() 
+                    headlight.toggle()
+                elif js.get_button(STOP_BUTTON):  # emergency stop 
+                    print("E-STOP PRESSED. TERMINATE!")
+                    headlight.off()
+                    headlight.close()
+                    cv.destroyAllWindows()
+                    pygame.quit()
+                    sys.exit()
         # predict steer and throttle
-        # image = cv.resize(frame, (120, 160))
         img_tensor = to_tensor(frame)
         pred_st, pred_th = model(img_tensor[None, :]).squeeze()
         st_trim = float(pred_st)
@@ -111,18 +110,21 @@ try:
             th_trim = .999
         elif th_trim <= -1:
             th_trim = -.999
-        # Drive servo
-        steer.angle = STEER_CENTER + st_trim * STEER_RANGE * STEER_DIR
-        # Drive motor
+        # Encode steering value to dutycycle in nanosecond
+        duty_st = STEERING_CENTER - STEERING_RANGE + int(STEERING_RANGE * (st_trim + 1))
+        # Encode throttle value to dutycycle in nanosecond
         if is_paused:
-            throttle.stop()
+            duty_th = THROTTLE_STALL
         else:
-            if th_trim >= 0.1:
-                throttle.forward(min(th_trim, THROTTLE_LIMIT))
-            elif th_trim <= -0.1:
-                throttle.backward(min(-th_trim, THROTTLE_LIMIT))
+            if th_trim > 0:
+                duty_th = THROTTLE_STALL + int(THROTTLE_FWD_RANGE * min(th_trim, THROTTLE_LIMIT))
+            elif th_trim < 0:
+                duty_th = THROTTLE_STALL + int(THROTTLE_REV_RANGE * max(th_trim, -THROTTLE_LIMIT))
             else:
-                throttle.stop()
+                duty_th = THROTTLE_STALL
+        msg = (str(duty_st) + "," + str(duty_th) + "\n").encode('utf-8')
+        # Transmit control signals
+        ser_pico.write(msg)
         print(f"predicted action: {pred_st, pred_th}")        
         frame_counts += 1
         # Log frame rate
@@ -130,8 +132,18 @@ try:
         frame_rate = frame_counts / since_start
         print(f"frame rate: {frame_rate}")
         if cv.waitKey(1)==ord('q'):
+            headlight.off()
+            headlight.close()
             cv.destroyAllWindows()
+            pygame.quit()
+            ser_pico.close()
             sys.exit()
+ 
+# Take care terminate signal (Ctrl-c)
 except KeyboardInterrupt:
+    headlight.off()
+    headlight.close()
     cv.destroyAllWindows()
+    pygame.quit()
+    ser_pico.close()
     sys.exit()

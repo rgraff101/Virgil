@@ -1,3 +1,6 @@
+"""
+If ssh from other machine, please enable X11 forwarding, either `ssh -X` or `ssh -Y`
+"""
 import sys
 import cv2
 from picamera2 import Picamera2

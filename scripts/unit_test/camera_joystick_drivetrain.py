@@ -1,9 +1,10 @@
+"""
+Integrated test with controller, pico usb communication, throttle motor.
+"""
 import sys
 import os
 import json
 from time import time
-from datetime import datetime
-import csv
 import serial
 import pygame
 import cv2 as cv
@@ -13,7 +14,7 @@ from gpiozero import LED
 
 # SETUP
 # Load configs
-params_file_path = os.path.join(sys.path[0], 'configs.json')
+params_file_path = os.path.join(os.path.dirname(sys.path[0]), 'configs.json')
 params_file = open(params_file_path)
 params = json.load(params_file)
 # Constants
@@ -37,19 +38,6 @@ print(f"Pico is connected to port: {ser_pico.name}")
 pygame.display.init()
 pygame.joystick.init()
 js = pygame.joystick.Joystick(0)
-# Create data directory
-image_dir = os.path.join(
-    os.path.dirname(sys.path[0]),
-    'data', datetime.now().strftime("%Y-%m-%d-%H-%M"),
-    'images/'
-)
-if not os.path.exists(image_dir):
-    try:
-        os.makedirs(image_dir)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
-label_path = os.path.join(os.path.dirname(os.path.dirname(image_dir)), 'labels.csv')
 # Init camera
 cv.startWindowThread()
 cam = Picamera2()
@@ -73,12 +61,11 @@ for i in reversed(range(60)):
 start_stamp = time()
 frame_counts = 0
 ave_frame_rate = 0.
-# Init variables
-ax_val_st = 0. # center steering
-ax_val_th = 0. # shut throttle
-is_recording = False
+# Init joystick axes values
+ax_val_st = 0.
+ax_val_th = 0.
 
-# LOOP
+# MAIN LOOP
 try:
     while True:
         frame = cam.capture_array() # read image
@@ -89,15 +76,14 @@ try:
             pygame.quit()
             ser_pico.close()
             sys.exit()
+        cv.imshow('camera', frame)
         for e in pygame.event.get(): # read controller input
             if e.type == pygame.JOYAXISMOTION:
                 ax_val_st = round((js.get_axis(STEERING_AXIS)), 2)  # keep 2 decimals
                 ax_val_th = round((js.get_axis(THROTTLE_AXIS)), 2)  # keep 2 decimals
             elif e.type == pygame.JOYBUTTONDOWN:
                 if js.get_button(RECORD_BUTTON):
-                    is_recording = not is_recording
-                    print(f"Recording: {is_recording}")
-                    headlight.toggle()
+                    headlight.toggle() 
                 elif js.get_button(STOP_BUTTON): # emergency stop
                     print("E-STOP PRESSED. TERMINATE!")
                     headlight.off()
@@ -107,8 +93,8 @@ try:
                     ser_pico.close()
                     sys.exit()
         # Calaculate steering and throttle value
-        act_st = ax_val_st  # steer action: -1: left, 1: right
-        act_th = -ax_val_th  # throttle action: -1: max forward, 1: max backward
+        act_st = ax_val_st
+        act_th = -ax_val_th # throttle action: -1: max forward, 1: max backward
         # Encode steering value to dutycycle in nanosecond
         duty_st = STEERING_CENTER - STEERING_RANGE + int(STEERING_RANGE * (act_st + 1))
         # Encode throttle value to dutycycle in nanosecond
@@ -119,20 +105,12 @@ try:
         else:
             duty_th = THROTTLE_STALL 
         msg = (str(duty_st) + "," + str(duty_th) + "\n").encode('utf-8')
-        # Transmit control signals
         ser_pico.write(msg)
-        # Log data
+        # Log action
         action = [act_st, act_th]
-        # print(f"action: {action}")
-        if is_recording:
-            # img = cv.resize(frame, (120, 160))
-            cv.imwrite(image_dir + str(frame_counts) + '.jpg', frame)
-            label = [str(frame_counts) + '.jpg'] + action
-            with open(label_path, 'a+', newline='') as f:
-                writer = csv.writer(f)
-                writer.writerow(label)
-        frame_counts += 1
+        print(f"action: {action}")
         # Log frame rate
+        frame_counts += 1
         since_start = time() - start_stamp
         frame_rate = frame_counts / since_start
         print(f"frame rate: {frame_rate}")
@@ -145,7 +123,7 @@ try:
             ser_pico.close()
             sys.exit()
 
-# Take care terminate signal (Ctrl-c)
+# Take care terminal signal (Ctrl-c)
 except KeyboardInterrupt:
     headlight.off()
     headlight.close()

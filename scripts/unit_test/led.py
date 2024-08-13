@@ -1,8 +1,8 @@
 import sys
 import os
-from gpiozero import LED
-from time import sleep
 import json
+from time import sleep
+from gpiozero import LED
 
 # Load configs
 params_file_path = os.path.join(os.path.dirname(sys.path[0]), 'configs.json')

@@ -3,12 +3,13 @@ Integrated test with controller, pico usb communication, throttle motor.
 """
 import sys
 import os
-import serial
-import cv2 as cv
-from picamera2 import Picamera2
-import pygame
 import json
 from time import time
+import serial
+import pygame
+import cv2 as cv
+from picamera2 import Picamera2
+from gpiozero import LED
 
 
 # SETUP
@@ -25,7 +26,11 @@ THROTTLE_STALL = params['throttle_stall']
 THROTTLE_FWD_RANGE = params['throttle_fwd_range']
 THROTTLE_REV_RANGE = params['throttle_rev_range']
 THROTTLE_LIMIT = params['throttle_limit']
+RECORD_BUTTON = params['record_btn']
 STOP_BUTTON = params['stop_btn']
+# Init LED
+headlight = LED(params['led_pin'])
+headlight.off()
 # Init serial port
 ser_pico = serial.Serial(port='/dev/ttyACM0', baudrate=115200)
 print(f"Pico is connected to port: {ser_pico.name}")
@@ -76,7 +81,9 @@ try:
                 ax_val_st = round((js.get_axis(STEERING_AXIS)), 2)  # keep 2 decimals
                 ax_val_th = round((js.get_axis(THROTTLE_AXIS)), 2)  # keep 2 decimals
             elif e.type == pygame.JOYBUTTONDOWN:
-                if js.get_button(STOP_BUTTON):  # emergency stop 
+                if js.get_button(RECORD_BUTTON):
+                    headlight.toggle() 
+                elif js.get_button(STOP_BUTTON):  # emergency stop
                     print("E-STOP PRESSED. TERMINATE")
                     cv.destroyAllWindows()
                     pygame.quit()

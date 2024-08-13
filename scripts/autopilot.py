@@ -111,7 +111,10 @@ try:
         elif th_trim <= -1:
             th_trim = -.999
         # Encode steering value to dutycycle in nanosecond
-        duty_st = STEERING_CENTER - STEERING_RANGE + int(STEERING_RANGE * (st_trim + 1))
+        if is_paused:
+            duty_st = STEERING_CENTER
+        else:
+            duty_st = STEERING_CENTER - STEERING_RANGE + int(STEERING_RANGE * (st_trim + 1))
         # Encode throttle value to dutycycle in nanosecond
         if is_paused:
             duty_th = THROTTLE_STALL

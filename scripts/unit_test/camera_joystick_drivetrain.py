@@ -68,30 +68,33 @@ ax_val_th = 0.
 # MAIN LOOP
 try:
     while True:
-        frame = cam.capture_array()  # read image
+        frame = cam.capture_array() # read image
         if frame is None:
             print("No frame received. TERMINATE!")
+            headlight.close()
             cv.destroyAllWindows()
             pygame.quit()
             ser_pico.close()
             sys.exit()
         cv.imshow('camera', frame)
-        for e in pygame.event.get():  # read controller input
+        for e in pygame.event.get(): # read controller input
             if e.type == pygame.JOYAXISMOTION:
                 ax_val_st = round((js.get_axis(STEERING_AXIS)), 2)  # keep 2 decimals
                 ax_val_th = round((js.get_axis(THROTTLE_AXIS)), 2)  # keep 2 decimals
             elif e.type == pygame.JOYBUTTONDOWN:
                 if js.get_button(RECORD_BUTTON):
                     headlight.toggle() 
-                elif js.get_button(STOP_BUTTON):  # emergency stop
-                    print("E-STOP PRESSED. TERMINATE")
+                elif js.get_button(STOP_BUTTON): # emergency stop
+                    print("E-STOP PRESSED. TERMINATE!")
+                    headlight.off()
+                    headlight.close()
                     cv.destroyAllWindows()
                     pygame.quit()
                     ser_pico.close()
                     sys.exit()
         # Calaculate steering and throttle value
         act_st = ax_val_st
-        act_th = -ax_val_th  # throttle action: -1: max forward, 1: max backward
+        act_th = -ax_val_th # throttle action: -1: max forward, 1: max backward
         # Encode steering value to dutycycle in nanosecond
         duty_st = STEERING_CENTER - STEERING_RANGE + int(STEERING_RANGE * (act_st + 1))
         # Encode throttle value to dutycycle in nanosecond
@@ -102,7 +105,6 @@ try:
         else:
             duty_th = THROTTLE_STALL 
         msg = (str(duty_st) + "," + str(duty_th) + "\n").encode('utf-8')
-        # f"{act_st,act_th}\n".encode('utf-8')
         ser_pico.write(msg)
         # Log action
         action = [act_st, act_th]
@@ -114,6 +116,8 @@ try:
         print(f"frame rate: {frame_rate}")
         # Press "q" to quit
         if cv.waitKey(1)==ord('q'):
+            headlight.off()
+            headlight.close()
             cv.destroyAllWindows()
             pygame.quit()
             ser_pico.close()
@@ -121,6 +125,9 @@ try:
 
 # Take care terminal signal (Ctrl-c)
 except KeyboardInterrupt:
+    headlight.off()
+    headlight.close()
+    cv.destroyAllWindows()
     pygame.quit()
     ser_pico.close()
     sys.exit()

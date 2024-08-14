@@ -1,7 +1,7 @@
 | Item         | Link                     | Qty.  | Unit Price   |
 | :---:        | :---                     | :---: |         ---: |
 | 1/16 RC Car, brushed motor | [https://www.amazon.com/dp/B0CKPCPDSG](https://www.amazon.com/dp/B0CKPCPDSG) | 1 | $98.88 |
-| Wireless Game Pad | [[[https://www.amazon.com/dp/B07PQ62D7V](https://www.amazon.com/gp/product/B0BWH7FBZC/)](https://www.amazon.com/dp/B07PQ62D7V](https://www.amazon.com/gp/product/B0BWH7FBZC/)) | 1 | $19.99 |
+| Wireless Game Pad | [[https://www.amazon.com/dp/B07PQ62D7V](https://www.amazon.com/gp/product/B0BWH7FBZC/)] | 1 | $19.99 |
 | DC Motor Driver, 13A continuous and 30A peak | [https://www.amazon.com/dp/B07CW3GRL6](https://www.amazon.com/dp/B07CW3GRL6) | 1 | $13.90 |
 | Adjustable Buck Converter, 6V - 32V to 1.5V - 32V | [https://www.amazon.com/dp/B0CXT83GV6](https://www.amazon.com/dp/B0CXT83GV6) | 1 | $12.49 |
 | Mini Buck Converter, 4.5V - 20V to 5V | [https://www.amazon.com/dp/B08Q3TKJH5/?th=1](https://www.amazon.com/dp/B08Q3TKJH5/?th=1) | 1 | $1.69 |

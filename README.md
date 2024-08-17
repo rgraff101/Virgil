@@ -1,14 +1,16 @@
 # BearCart
-BearCart an autonomous driving project. The goal is to upgrade an off-the-shelf
+
+BearCart is an autonomous driving project. The goal is to upgrade an off-the-shelf
 RC car into an AI powered self-driving platform. The software is running on a
 Raspberry Pi 5 SBC in its native operating system: Raspberry Pi OS.
+Visit [documentations](https://ucaengineeringphysics.github.io/BearCart/) for more details.
 ![portrait](/_DOCS/assemble/mechanical/images/bc_portrait.jpg)
 
 This project is strongly inspired by the 
 [DonkeyCar](https://github.com/autorope/donkeycar) project.
 
 
-## Software Installation
+## Quick Start
 Fire up the terminal on your Raspberry Pi, and run following commands in it.
 
 ### Install Dependencies 
@@ -29,13 +31,6 @@ cd ~/BearCart
 pip install -r requirements.txt --break-system-packages
 ```
 
-## Assembly Guides
-- Components [layout](/_DOCS/assemble/mechanical/README.md)
-- Wiring [diagrams](/_DOCS/assemble/electric/README.md) 
-
-## Bill of Materials
-Please use our [shopping list](/_DOCS/BOM.md) for a reference
-
-## Demo video
+## Demo Videos
 - [Initial BearCart](https://youtube.com/shorts/Kcm6qQqev3s)
 - [Another Autopilot](https://youtu.be/8GX6HnfgrJQ)

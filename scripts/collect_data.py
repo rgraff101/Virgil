@@ -10,18 +10,15 @@ import cv2 as cv
 from picamera2 import Picamera2
 from gpiozero import LED
 
-
 # SETUP
 # Load configs
 params_file_path = os.path.join(sys.path[0], 'configs.json')
-params_file = open(params_file_path)
-params = json.load(params_file)
+with open(params_file_path) as params_file:
+    params = json.load(params_file)
 
 # Constants
-STEERING_AXIS = params['steering_joy_axis']
-STEERING_CENTER = params['steering_center']
-STEERING_RANGE = params['steering_range']
-THROTTLE_AXIS = params['throttle_joy_axis']
+THROTTLE_AXIS = params['throttle_joy_axis']  # Axis for forward/backward
+STEERING_AXIS = params['steering_joy_axis']  # Axis for left/right
 THROTTLE_STALL = params['throttle_stall']
 THROTTLE_FWD_RANGE = params['throttle_fwd_range']
 THROTTLE_REV_RANGE = params['throttle_rev_range']
@@ -40,7 +37,11 @@ print(f"Pico is connected to port: {ser_pico.name}")
 # Init controller
 pygame.display.init()
 pygame.joystick.init()
-js = pygame.joystick.Joystick(0)
+try:
+    js = pygame.joystick.Joystick(0)
+except pygame.error:
+    print("No joystick found!")
+    sys.exit()
 
 # Create data directory
 image_dir = os.path.join(
@@ -48,9 +49,7 @@ image_dir = os.path.join(
     'data', datetime.now().strftime("%Y-%m-%d-%H-%M"),
     'images/'
 )
-if not os.path.exists(image_dir):
-    os.makedirs(image_dir)
-
+os.makedirs(image_dir, exist_ok=True)
 label_path = os.path.join(os.path.dirname(os.path.dirname(image_dir)), 'labels.csv')
 
 # Init camera
@@ -78,9 +77,18 @@ start_stamp = time()
 frame_counts = 0
 
 # Init variables
-ax_val_st = 0.0  # Center steering
 ax_val_th = 0.0  # Shut throttle
+ax_val_st = 0.0  # Center steering
 is_recording = False
+
+# Commands
+COMMANDS = {
+    "FORWARD": "FORWARD,50\n",
+    "BACKWARD": "BACKWARD,50\n",
+    "LEFT": "LEFT,50\n",
+    "RIGHT": "RIGHT,50\n",
+    "STOP": "STOP\n"
+}
 
 # LOOP
 try:
@@ -96,8 +104,8 @@ try:
 
         for e in pygame.event.get():  # Read controller input
             if e.type == pygame.JOYAXISMOTION:
-                ax_val_st = round(js.get_axis(STEERING_AXIS), 2)  # Keep 2 decimals
-                ax_val_th = round(js.get_axis(THROTTLE_AXIS), 2)  # Keep 2 decimals
+                ax_val_th = round(js.get_axis(THROTTLE_AXIS), 2)  # Throttle axis (up/down)
+                ax_val_st = round(js.get_axis(STEERING_AXIS), 2)  # Steering axis (left/right)
             elif e.type == pygame.JOYBUTTONDOWN:
                 if js.get_button(RECORD_BUTTON):
                     is_recording = not is_recording
@@ -112,27 +120,27 @@ try:
                     ser_pico.close()
                     sys.exit()
 
-        # Calculate steering and throttle values
-        act_st = ax_val_st  # Steering action: -1: left, 1: right
+        # Calculate throttle values
         act_th = -ax_val_th  # Throttle action: -1: max forward, 1: max backward
 
-        # Encode steering value to dutycycle
-        duty_st = STEERING_CENTER - STEERING_RANGE + int(STEERING_RANGE * (act_st + 1))
-
-        # Encode throttle value to dutycycle
+        # Determine forward/backward command
         if act_th > 0:
-            duty_th = THROTTLE_STALL + int(THROTTLE_FWD_RANGE * min(act_th, THROTTLE_LIMIT))
+            ser_pico.write(COMMANDS["FORWARD"].encode('utf-8'))
         elif act_th < 0:
-            duty_th = THROTTLE_STALL + int(THROTTLE_REV_RANGE * max(act_th, -THROTTLE_LIMIT))
+            ser_pico.write(COMMANDS["BACKWARD"].encode('utf-8'))
         else:
-            duty_th = THROTTLE_STALL 
+            ser_pico.write(COMMANDS["STOP"].encode('utf-8'))
 
-        # Send the calculated duty cycle to the Pico via serial
-        msg = f"{duty_st},{duty_th}\n"  # Create a message with both steering and throttle values
-        ser_pico.write(msg.encode('utf-8'))  # Send the message to the Pico
+        # Determine left/right steering command
+        if ax_val_st > 0.5:
+            ser_pico.write(COMMANDS["RIGHT"].encode('utf-8'))
+        elif ax_val_st < -0.5:
+            ser_pico.write(COMMANDS["LEFT"].encode('utf-8'))
+        else:
+            ser_pico.write(COMMANDS["STOP"].encode('utf-8'))
 
         # Log data
-        action = [act_st, act_th]
+        action = [act_th, ax_val_st]
         if is_recording:
             cv.imwrite(image_dir + str(frame_counts) + '.jpg', frame)
             label = [str(frame_counts) + '.jpg'] + action
@@ -146,8 +154,8 @@ try:
         frame_rate = frame_counts / since_start
         print(f"frame rate: {frame_rate}")
 
-# Handle termination signals
-except KeyboardInterrupt:
+except Exception as e:
+    print(f"An error occurred: {e}")
     headlight.off()
     headlight.close()
     cv.destroyAllWindows()
